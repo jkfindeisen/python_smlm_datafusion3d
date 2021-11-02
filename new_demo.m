@@ -35,7 +35,7 @@ outputdir = '.';
 
 addpath(genpath('MATLAB'))
 addpath(genpath('build/mex'))
-addpath(genpath('build/figtree/src/mex'))
+addpath(genpath('build/figtree-mex'))
 
 %%
 

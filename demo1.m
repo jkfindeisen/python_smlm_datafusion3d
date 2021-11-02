@@ -17,7 +17,7 @@ clear all
 % add the required dir to path. Choose the right code block for your OS
 % for linux
 path_mex_matlab1 = genpath('build/mex/');
-path_mex_matlab2 = genpath('build/figtree/src/mex/');
+path_mex_matlab2 = genpath('build/figtree-mex/');
 path_matlab = genpath('MATLAB');
 
 % for windows
