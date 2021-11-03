@@ -1,3 +1,4 @@
+function demo1()
 %%
 % (C) Copyright 2018-2020      
 % Faculty of Applied Sciences
@@ -12,8 +13,8 @@
 
 %% 
 close all
-clear all
 
+t = tic();
 % add the required dir to path. Choose the right code block for your OS
 % for linux
 path_mex_matlab1 = genpath('build/mex/');
@@ -37,7 +38,7 @@ USE_GPU_EXPDIST = 1;
 filename = 'nup_data.mat';
 load(['data/' filename]);
 
-N = 100;     % choose N particles
+N = 5;     % choose N particles
 if N > numel(particles)
     N = numel(particles);
 end
@@ -98,3 +99,7 @@ iter = 5;           % number of iterations
 %% Visualize the results
 visualizeSMLM3D(superParticleWithoutPK{1,5},0.05, 1);
 % visualizeCloud3D(superParticleWithPK{1,5},0.05, 1);
+
+toc(t);
+
+end

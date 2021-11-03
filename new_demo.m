@@ -1,4 +1,5 @@
-% (C) Copyright 2018-2020      
+function new_demo()
+% (C) Copyright 2018-2020
 % Faculty of Applied Sciences
 % Delft University of Technology
 %
@@ -11,6 +12,7 @@
 
 % demo of particle averaging code using the fast network approach
 
+t = tic();
 % settings and misc parameters
 N = 10;                          % number of particles for alignment
 USE_SYMMETRY = 0;                % flag for imposing symmetry prior knowledge
@@ -30,7 +32,7 @@ USE_GPU_GAUSSTRANSFORM = true;
 USE_GPU_EXPDIST = true;
 USE_GPU = true;
 
-datafile = 'data/example_data.mat';
+datafile = 'data/nup_data.mat';
 outputdir = '.';
 
 addpath(genpath('MATLAB'))
@@ -66,19 +68,19 @@ idx=1;
 sampling = datasample(1:length(particles),N,'Replace',false);
 for i=sampling
     subParticles{1,idx}.points = particles{1,i}.coords(:,1:3);
-%             idxZ = find(subParticles{1,idx}.points(:,3) > 1 | subParticles{1,idx}.points(:,3) < -1);
-%             subParticles{1,idx}.points(idxZ,:) = [];
+    %             idxZ = find(subParticles{1,idx}.points(:,3) > 1 | subParticles{1,idx}.points(:,3) < -1);
+    %             subParticles{1,idx}.points(idxZ,:) = [];
     subParticles{1,idx}.sigma = [particles{1,i}.coords(:,5) particles{1,i}.coords(:,10)].^2;
-%             subParticles{1,idx}.sigma(idxZ,:) = [];
+    %             subParticles{1,idx}.sigma(idxZ,:) = [];
     gtparam(idx) = {particles{1,i}.param};
     idx=idx+1;
 end
 
- result.sampling = sampling;
- result.gtparam = gtparam;
+result.sampling = sampling;
+result.gtparam = gtparam;
 
 % filter out localisations with precision above 1.5*mean value (optional)
-    % other criteria for filtering localisations can also be applied
+% other criteria for filtering localisations can also be applied
 sig = [];
 for ii=1:N
     sig = [sig;subParticles{ii}.sigma];
@@ -96,7 +98,7 @@ end
 disp('all2all registration started!');
 [RR, I,cost] = all2all3D(subParticles, scale,initAng, USE_GPU_GAUSSTRANSFORM, USE_GPU_EXPDIST);
 % [RR, I,cost] = all2all3D(subParticles, USE_GPU_GAUSSTRANSFORM, USE_GPU_EXPDIST);
-        
+
 % plot cost matrix
 f1 = figure('visible',vis,'units','normalized','outerposition',[0 0 0.5 1]);
 imagesc(cost)
@@ -136,7 +138,7 @@ set(gca,'Fontsize',28,...
     'Ycolor',[1 1 1],...
     'Xcolor',[1 1 1],...
     'Zcolor',[1 1 1],...
-    'color',[0 0 0])       
+    'color',[0 0 0])
 xlabel('x [nm]','color',[1 1 1])
 ylabel('y [nm]','color',[1 1 1])
 zlabel('z [nm]','color',[1 1 1])
@@ -151,9 +153,9 @@ for ii=1:72
     im = frame2im(frame);
     [imind,cm] = rgb2ind(im,256);
     if ii==1
-    imwrite(imind,cm,filename,'gif','loopcount',inf,'delay',delay);
+        imwrite(imind,cm,filename,'gif','loopcount',inf,'delay',delay);
     else
-    imwrite(imind,cm,filename,'gif','WriteMode','append','delay',delay);
+        imwrite(imind,cm,filename,'gif','WriteMode','append','delay',delay);
     end
 end
 
@@ -184,7 +186,7 @@ set(gca,'Fontsize',28,...
     'Ycolor',[1 1 1],...
     'Xcolor',[1 1 1],...
     'Zcolor',[1 1 1],...
-    'color',[0 0 0])       
+    'color',[0 0 0])
 xlabel('x [nm]','color',[1 1 1])
 ylabel('y [nm]','color',[1 1 1])
 zlabel('z [nm]','color',[1 1 1])
@@ -198,9 +200,9 @@ for ii=1:72
     im = frame2im(frame);
     [imind,cm] = rgb2ind(im,256);
     if ii==1
-    imwrite(imind,cm,filename,'gif','loopcount',inf,'delay',delay);
+        imwrite(imind,cm,filename,'gif','loopcount',inf,'delay',delay);
     else
-    imwrite(imind,cm,filename,'gif','WriteMode','append','delay',delay);
+        imwrite(imind,cm,filename,'gif','WriteMode','append','delay',delay);
     end
 end
 
@@ -212,7 +214,7 @@ result.OptimalSE3 = newP;
 % [superParticle, ~] = one2all3D(initAlignedParticles, iter, M1, '.', intermediate,...
 %     USE_SYMMETRY, USE_GPU_GAUSSTRANSFORM, USE_GPU_EXPDIST);
 [finalParticles, transform] = get_final_transform_params(superParticle{end}, subParticles);
-        
+
 % show result of network rotation
 f4=figure('visible',vis,'units','normalized','outerposition',[ 0 0 0.5 1]);
 tmp = superParticle{end};
@@ -229,7 +231,7 @@ set(gca,'Fontsize',28,...
     'Ycolor',[1 1 1],...
     'Xcolor',[1 1 1],...
     'Zcolor',[1 1 1],...
-    'color',[0 0 0])       
+    'color',[0 0 0])
 xlabel('x [nm]','color',[1 1 1])
 ylabel('y [nm]','color',[1 1 1])
 zlabel('z [nm]','color',[1 1 1])
@@ -243,17 +245,20 @@ for ii=1:72
     im = frame2im(frame);
     [imind,cm] = rgb2ind(im,256);
     if ii==1
-    imwrite(imind,cm,filename,'gif','loopcount',inf,'delay',delay);
+        imwrite(imind,cm,filename,'gif','loopcount',inf,'delay',delay);
     else
-    imwrite(imind,cm,filename,'gif','WriteMode','append','delay',delay);
+        imwrite(imind,cm,filename,'gif','WriteMode','append','delay',delay);
     end
 end
-        
+
 result.final.finalparticles = finalParticles;
 result.final.transform = transform;
 
 % save result
 save([outputdir,'/result.mat'],'result')
+
+toc(t);
+end
 
 
 
