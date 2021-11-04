@@ -23,7 +23,7 @@ nIteration=8;                   % iterations for pairfittig for realignment
 tolerance = 1.5;            % tolerance level for the deviation of the uncertainty of localisations
 vis='off';                  % flag determining if plots will be visible
 PLOT_COST_LANDSCAPE=false;  % flag determinig if scale_sweep plots cost vs scale
-numsample = 6;             % pairs of particles used for scale_sweep
+numsample = 5;             % pairs of particles used for scale_sweep
 initAng = 8;                % number of initialisation angles per degree of freedom during registration
 delay = 0.1;                % delay used when saving .gif figures
 
@@ -46,6 +46,7 @@ addpath(genpath('build/figtree-mex'))
 result = struct();
 
 load(datafile)
+particles = particles(1:10);
 
 % perform scale sweep to find optimal scale for alignment
 disp('starting scale sweep')
@@ -53,7 +54,7 @@ disp('starting scale sweep')
 
 % select scales for alignment
 [~,idxS] = find(mean(cost_log,1)==max(mean(cost_log,1)));
-scale = [scales_vec(idxS+3),scales_vec(idxS),scales_vec(idxS-3)];
+scale = [scales_vec(min(idxS+3, end)),scales_vec(idxS),scales_vec(max(idxS-3, 1))];
 
 % save results of scale sweep
 result.ScaleSweep.scale = scale;
@@ -210,7 +211,8 @@ result.OptimalSE3 = newP;
 
 % 3. bootstrapping of the intermediate superparticle by one-2-all alignment
 [superParticle, ~] = one2all3D(initAlignedParticles, iter, M1, '.', intermediate,...
-    USE_SYMMETRY,scale,initAng, USE_GPU_GAUSSTRANSFORM, USE_GPU_EXPDIST);
+    USE_SYMMETRY, USE_GPU_GAUSSTRANSFORM, USE_GPU_EXPDIST);
+%     USE_SYMMETRY,scale,initAng, USE_GPU_GAUSSTRANSFORM, USE_GPU_EXPDIST);
 % [superParticle, ~] = one2all3D(initAlignedParticles, iter, M1, '.', intermediate,...
 %     USE_SYMMETRY, USE_GPU_GAUSSTRANSFORM, USE_GPU_EXPDIST);
 [finalParticles, transform] = get_final_transform_params(superParticle{end}, subParticles);
