@@ -1,5 +1,6 @@
+function testMexExpDist()
 %%
-% (C) Copyright 2018-2020      
+% (C) Copyright 2018-2020
 % Faculty of Applied Sciences
 % Delft University of Technology
 %
@@ -11,21 +12,20 @@
 %    http://www.apache.org/licenses/LICENSE-2.0
 
 %% Initialization
-clear all 
 close all
-clc
 
-path(pathdef)
-addpath(genpath('test'))
-addpath(genpath('MATLAB'))
-addpath(genpath('build/mex/'))      %remove everything from path, except the correct mex files 
+addpath(genpath('test'));
+addpath(genpath('MATLAB'));
+addpath(genpath('build/mex/'));      %remove everything from path, except the correct mex files
 
-
-
+% load dataset stored in data directory
+filename = 'nup_data.mat';
+load(['data/' filename]);
+particles = particles(1:5);
 
 %% Uncertainty matrix as mx2:
 %this code assumes the new mex-files, where the indexing has been changed
-%and the costfunction is normalized with respect to the sigmas. 
+%and the costfunction is normalized with respect to the sigmas.
 %If the old mex-files are used, the values will be different/wrong
 %initialize particles (S and M have two locs)
 
@@ -35,19 +35,19 @@ M.points = [1 -1 1; 1 2 3];
 M.sigma = [10 1; 3 4];
 
 %test without rotation or a random rotation
-%RM = eye(3); 
+%RM = eye(3);
 RM = rand(3);
 
 %CPU
-mex_expdist_cpu(S.points,M.points,correct_uncer(S.sigma),correct_uncer(M.sigma),RM)                
+mex_expdist_cpu(S.points,M.points,correct_uncer(S.sigma),correct_uncer(M.sigma),RM)
 
 %GPU
-mex_expdist(S.points,M.points,correct_uncer(S.sigma),correct_uncer(M.sigma),RM)  
+mex_expdist(S.points,M.points,correct_uncer(S.sigma),correct_uncer(M.sigma),RM)
 
 %manual
 manualCostFunction(S,M,RM)
 
-%all three values should be the same 
+%all three values should be the same
 
 %% Uncertainty matrix as mx9 (for M)
 S.points = [0,0,0;1,1,1];
@@ -63,7 +63,7 @@ RM = eye(3);
 %GPU
 mex_expdist(S.points,M.points,correct_uncer(S.sigma),correct_uncer(M.sigma),RM)
 %manual
-manualCostFunction(S,M,RM)      
+manualCostFunction(S,M,RM)
 
 %% including pairFitting (on real particles)
 load('data/data.mat')
@@ -74,17 +74,17 @@ for i=1:2
 end
 
 %GPU
-M = subParticles{1}; 
-S = subParticles{2}; 
+M = subParticles{1};
+S = subParticles{2};
 [param,~,cost] = pairFitting3D_parallel(M, S,ones(1,size(S.points,1)), 0.1, 1, 1, 1);
 
 M_trans.points = transform_by_rigid3d(M.points, param);
-M_trans.sigma = M.sigma; 
+M_trans.sigma = M.sigma;
 RM = quaternion2rotation(param(1:4));
 
-mex_expdist_cpu(S.points,M_trans.points,correct_uncer(S.sigma),correct_uncer(M_trans.sigma),RM)                
+mex_expdist_cpu(S.points,M_trans.points,correct_uncer(S.sigma),correct_uncer(M_trans.sigma),RM)
 mex_expdist(S.points,M_trans.points,correct_uncer(S.sigma),correct_uncer(M_trans.sigma),RM)
 manualCostFunction(S,M_trans,RM)
-%these two values must be the same 
+%these two values must be the same
 
-
+end

@@ -39,7 +39,7 @@ function [RR, I, cost] = all2all3D(subParticles, scale, initAng, USE_GPU_GAUSSTR
     cost = zeros(N);
     
     for i=1:N-1
-        parfor j=i+1:N
+        for j=i+1:N
 
             [param,cost(i,j)] = pairFitting3D(subParticles{1,i}.points, subParticles{1,j}.points, ...
                                subParticles{1,i}.sigma, subParticles{1,j}.sigma, scale, initAng, USE_GPU_GAUSSTRANSFORM, USE_GPU_EXPDIST);

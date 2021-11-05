@@ -11,7 +11,7 @@ function new_demo()
 %    http://www.apache.org/licenses/LICENSE-2.0
 
 % demo of particle averaging code using the fast network approach
-
+profile on;
 t = tic();
 % settings and misc parameters
 N = 10;                          % number of particles for alignment
@@ -260,6 +260,8 @@ result.final.transform = transform;
 save([outputdir,'/result.mat'],'result')
 
 toc(t);
+
+profile viewer;
 end
 
 

@@ -14,6 +14,8 @@ function demo1()
 %% 
 close all
 
+profile on;
+
 t = tic();
 % add the required dir to path. Choose the right code block for your OS
 % for linux
@@ -101,5 +103,7 @@ visualizeSMLM3D(superParticleWithoutPK{1,5},0.05, 1);
 % visualizeCloud3D(superParticleWithPK{1,5},0.05, 1);
 
 toc(t);
+
+profile viewer;
 
 end
